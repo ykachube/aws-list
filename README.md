@@ -1,40 +1,41 @@
-# aws-nuke
+# aws-list
 
-![Build Status](https://github.com/rebuy-de/aws-nuke/workflows/Golang%20CI/badge.svg?branch=main)
-[![license](https://img.shields.io/github/license/rebuy-de/aws-nuke.svg)](https://github.com/rebuy-de/aws-nuke/blob/main/LICENSE)
-[![GitHub release](https://img.shields.io/github/release/rebuy-de/aws-nuke.svg)](https://github.com/rebuy-de/aws-nuke/releases)
-[![Docker Hub](https://img.shields.io/docker/pulls/rebuy/aws-nuke)](https://hub.docker.com/r/rebuy/aws-nuke)
+![Build Status](https://github.com/rebuy-de/aws-list/workflows/Golang%20CI/badge.svg?branch=main)
+[![license](https://img.shields.io/github/license/rebuy-de/aws-list.svg)](https://github.com/rebuy-de/aws-list/blob/main/LICENSE)
+[![GitHub release](https://img.shields.io/github/release/rebuy-de/aws-list.svg)](https://github.com/rebuy-de/aws-list/releases)
+[![Docker Hub](https://img.shields.io/docker/pulls/rebuy/aws-list)](https://hub.docker.com/r/rebuy/aws-list)
 
-Remove all resources from an AWS account.
+List all resources from an AWS account.
 
-> **Development Status** *aws-nuke* is stable, but it is likely that not all AWS
+> **Development Status** *aws-list* is stable, but it is likely that not all AWS
 resources are covered by it. Be encouraged to add missing resources and create
-a Pull Request or to create an [Issue](https://github.com/rebuy-de/aws-nuke/issues/new).
+a Pull Request or to create an [Issue](https://github.com/rebuy-de/aws-list/issues/new).
 
 ## Caution!
 
 Be aware that *aws-nuke* is a very destructive tool, hence you have to be very
 careful while using it. Otherwise you might delete production data.
 
-**We strongly advise you to not run this application on any AWS account, where
-you cannot afford to lose all resources.**
+However this fork *aws-list* is safe as all descturctive actions were removed from the code.
+
+
 
 To reduce the blast radius of accidents, there are some safety precautions:
 
-1. By default *aws-nuke* only lists all nukeable resources. You need to add
+1. By default *aws-list* only lists all nukeable resources. You need to add
    `--no-dry-run` to actually delete resources.
-2. *aws-nuke* asks you twice to confirm the deletion by entering the account
+2. *aws-list* asks you twice to confirm the deletion by entering the account
    alias. The first time is directly after the start and the second time after
    listing all nukeable resources.
 3. To avoid just displaying a account ID, which might gladly be ignored by
    humans, it is required to actually set an [Account
    Alias](https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html)
-   for your account. Otherwise *aws-nuke* will abort.
+   for your account. Otherwise *aws-list* will abort.
 4. The Account Alias must not contain the string `prod`. This string is
    hardcoded and it is recommended to add it to every actual production account
    (eg `mycompany-production-ecr`).
 5. The config file contains a blocklist field. If the Account ID of the account
-   you want to nuke is part of this blocklist, *aws-nuke* will abort. It is
+   you want to nuke is part of this blocklist, *aws-list* will abort. It is
    recommended, that you add every production account to this blocklist.
 6. To ensure you don't just ignore the blocklisting feature, the blocklist must
    contain at least one Account ID.
@@ -53,10 +54,10 @@ procedures.
 
 * We are testing our [Terraform](https://www.terraform.io/) code with Jenkins.
   Sometimes a Terraform run fails during development and messes up the account.
-  With *aws-nuke* we can simply clean up the failed account so it can be reused
+  With *aws-list* we can simply clean up the failed account so it can be reused
   for the next build.
 * Our platform developers have their own AWS Accounts where they can create
-  their own Kubernetes clusters for testing purposes. With *aws-nuke* it is
+  their own Kubernetes clusters for testing purposes. With *aws-list* it is
   very easy to clean up these account at the end of the day and keep the costs
   low.
 
@@ -66,15 +67,15 @@ We usually release a new version once enough changes came together and have
 been tested for a while.
 
 You can find Linux, macOS and Windows binaries on the
-[releases page](https://github.com/rebuy-de/aws-nuke/releases), but we also
-provide containerized versions on [quay.io/rebuy/aws-nuke](https://quay.io/rebuy/aws-nuke)
-and [docker.io/rebuy/aws-nuke](https://hub.docker.com/r/rebuy/aws-nuke). Both
+[releases page](https://github.com/rebuy-de/aws-list/releases), but we also
+provide containerized versions on [quay.io/rebuy/aws-list](https://quay.io/rebuy/aws-list)
+and [docker.io/rebuy/aws-list](https://hub.docker.com/r/rebuy/aws-list). Both
 are available for multiple architectures (amd64, arm64 & armv7).
 
 
 ## Usage
 
-At first you need to create a config file for *aws-nuke*. This is a minimal one:
+At first you need to create a config file for *aws-list*. This is a minimal one:
 
 ```yaml
 regions:
@@ -85,18 +86,18 @@ account-blocklist:
 - "999999999999" # production
 
 accounts:
-  "000000000000": {} # aws-nuke-example
+  "000000000000": {} # aws-list-example
 ```
 
-With this config we can run *aws-nuke*:
+With this config we can run *aws-list*:
 
 ```
-$ aws-nuke -c config/nuke-config.yml --profile aws-nuke-example
-aws-nuke version v1.0.39.gc2f318f - Fri Jul 28 16:26:41 CEST 2017 - c2f318f37b7d2dec0e646da3d4d05ab5296d5bce
+$ aws-list -c config/list-config.yml --profile aws-list-example
+aws-list version v1.0.39.gc2f318f - Fri Jul 28 16:26:41 CEST 2017 - c2f318f37b7d2dec0e646da3d4d05ab5296d5bce
 
-Do you really want to nuke the account with the ID 000000000000 and the alias 'aws-nuke-example'?
+Do you really want to nuke the account with the ID 000000000000 and the alias 'aws-list-example'?
 Do you want to continue? Enter account alias to continue.
-> aws-nuke-example
+> aws-list-example
 
 eu-west-1 - EC2DHCPOption - 'dopt-bf2ec3d8' - would remove
 eu-west-1 - EC2Instance - 'i-01b489457a60298dd' - would remove
@@ -116,7 +117,7 @@ Scan complete: 13 total, 11 nukeable, 2 filtered.
 Would delete these resources. Provide --no-dry-run to actually destroy resources.
 ```
 
-As we see, *aws-nuke* only lists all found resources and exits. This is because
+As we see, *aws-list* only lists all found resources and exits. This is because
 the `--no-dry-run` flag is missing. Also it wants to delete the
 administrator. We don't want to do this, because we use this user to access
 our account. Therefore we have to extend the config so it ignores this user:
@@ -130,7 +131,7 @@ account-blocklist:
 - "999999999999" # production
 
 accounts:
-  "000000000000": # aws-nuke-example
+  "000000000000": # aws-list-example
     filters:
       IAMUser:
       - "my-user"
@@ -141,12 +142,12 @@ accounts:
 ```
 
 ```
-$ aws-nuke -c config/nuke-config.yml --profile aws-nuke-example --no-dry-run
-aws-nuke version v1.0.39.gc2f318f - Fri Jul 28 16:26:41 CEST 2017 - c2f318f37b7d2dec0e646da3d4d05ab5296d5bce
+$ aws-list -c config/nuke-config.yml --profile aws-list-example --no-dry-run
+aws-list version v1.0.39.gc2f318f - Fri Jul 28 16:26:41 CEST 2017 - c2f318f37b7d2dec0e646da3d4d05ab5296d5bce
 
-Do you really want to nuke the account with the ID 000000000000 and the alias 'aws-nuke-example'?
+Do you really want to nuke the account with the ID 000000000000 and the alias 'aws-list-example'?
 Do you want to continue? Enter account alias to continue.
-> aws-nuke-example
+> aws-list-example
 
 eu-west-1 - EC2DHCPOption - 'dopt-bf2ec3d8' - would remove
 eu-west-1 - EC2Instance - 'i-01b489457a60298dd' - would remove
@@ -163,9 +164,9 @@ eu-west-1 - IAMUserPolicyAttachment - 'my-user -> AdministratorAccess' - [UserNa
 eu-west-1 - IAMUser - 'my-user' - filtered by config
 Scan complete: 13 total, 8 nukeable, 5 filtered.
 
-Do you really want to nuke these resources on the account with the ID 000000000000 and the alias 'aws-nuke-example'?
+Do you really want to nuke these resources on the account with the ID 000000000000 and the alias 'aws-list-example'?
 Do you want to continue? Enter account alias to continue.
-> aws-nuke-example
+> aws-list-example
 
 eu-west-1 - EC2DHCPOption - 'dopt-bf2ec3d8' - failed
 eu-west-1 - EC2Instance - 'i-01b489457a60298dd' - triggered remove
@@ -193,17 +194,17 @@ Removal requested: 1 waiting, 6 failed, 5 skipped, 1 finished
 --- truncating long output ---
 ```
 
-As you see *aws-nuke* now tries to delete all resources which aren't filtered,
+As you see *aws-list* now tries to delete all resources which aren't filtered,
 without caring about the dependencies between them. This results in API errors
-which can be ignored. These errors are shown at the end of the *aws-nuke* run,
+which can be ignored. These errors are shown at the end of the *aws-list* run,
 if they keep to appear.
 
-*aws-nuke* retries deleting all resources until all specified ones are deleted
+*aws-list* retries deleting all resources until all specified ones are deleted
 or until there are only resources with errors left.
 
 ### AWS Credentials
 
-There are two ways to authenticate *aws-nuke*. There are static credentials and
+There are two ways to authenticate *aws-list*. There are static credentials and
 profiles. The later one can be configured in the shared credentials file (ie
 `~/.aws/credentials`) or the shared config file (ie `~/.aws/config`).
 
@@ -221,11 +222,11 @@ assuming role.
 
 ### Using custom AWS endpoint
 
-It is possible to configure aws-nuke to run against non-default AWS endpoints.
+It is possible to configure aws-list to run against non-default AWS endpoints.
 It could be used for integration testing pointing to a local endpoint such as an
 S3 appliance or a Stratoscale cluster for example.
 
-To configure aws-nuke to use custom endpoints, add the configuration directives as shown in the following example:
+To configure aws-list to use custom endpoints, add the configuration directives as shown in the following example:
 
 ```yaml
 regions:
@@ -268,8 +269,8 @@ accounts:
 
 This can then be used as follows:
 ```buildoutcfg
-$ aws-nuke -c config/my.yaml  --access-key-id <access-key> --secret-access-key <secret-key> --default-region demo10
-aws-nuke version v2.11.0.2.gf0ad3ac.dirty - Tue Nov 26 19:15:12 IST 2019 - f0ad3aca55eb66b93b88ce2375f8ad06a7ca856f
+$ aws-list -c config/my.yaml  --access-key-id <access-key> --secret-access-key <secret-key> --default-region demo10
+aws-list version v2.11.0.2.gf0ad3ac.dirty - Tue Nov 26 19:15:12 IST 2019 - f0ad3aca55eb66b93b88ce2375f8ad06a7ca856f
 
 Do you really want to nuke the account with the ID account-id-of-custom-region-demo10 and the alias 'account-id-of-custom-region-demo10'?
 Do you want to continue? Enter account alias to continue.
@@ -302,7 +303,7 @@ demo10 - EC2Volume - vol-dbea1d1083654d30a43366807a125aed - [tag:Name: "volume-5
 ```
 ### Specifying Resource Types to Delete
 
-*aws-nuke* deletes a lot of resources and there might be added more at any
+*aws-list* deletes a lot of resources and there might be added more at any
 release. Eventually, every resources should get deleted. You might want to
 restrict which resources to delete. There are multiple ways to configure this.
 
@@ -359,15 +360,15 @@ If an exclude is used, then all its resource types will not be deleted.
 **Hint:** You can see all available resource types with this command:
 
 ```
-aws-nuke resource-types
+aws-list resource-types
 ```
 
 ### AWS Cloud Control API Support
 
 > This feature is not yet released and is probably part of `v2.18`.
 
-_aws-nuke_ supports removing resources via the AWS Cloud Control API. When
-executing _aws-nuke_ it will automatically remove a manually managed set of
+_aws-list_ supports removing resources via the AWS Cloud Control API. When
+executing _aws-list_ it will automatically remove a manually managed set of
 resources via Cloud Control.
 
 Only a subset of Cloud Control supported resources will be removed
@@ -375,10 +376,10 @@ automatically, because there might be resources that were already implemented
 and adding them too would bypass existing filters in user configs as Cloud
 Control has another naming scheme and a different set of properties. Moreover,
 there are some Cloud Control resources that need special handling which is not
-yet supported by _aws-nuke_.
+yet supported by _aws-list_.
 
 Even though the subset of automatically supported Cloud Control resources is
-limited, you can can configure _aws-nuke_ to make it try any additional
+limited, you can can configure _aws-list_ to make it try any additional
 resource. Either via command line flags of via the config file.
 
 For the config file you have to add the resource to
@@ -395,14 +396,14 @@ If you want to use the command line, you have to add a `--cloud-control` flag
 for each resource you want to add:
 
 ```sh
-aws-nuke \
+aws-list \
     -c nuke-config.yaml \
     --cloud-control AWS::EC2::TransitGateway \
     --cloud-control AWS::EC2::VPC
 ```
 
 **Note:** There are some resources that are supported by Cloud Control and are
-already natively implemented by _aws-nuke_. If you configure to use Cloud
+already natively implemented by _aws-list_. If you configure to use Cloud
 Control for those resources, it will not execute the natively implemented code
 for this resource. For example with the `--cloud-control AWS::EC2::VPC` it will
 not use the `EC2VPC` resource.
@@ -411,7 +412,7 @@ not use the `EC2VPC` resource.
 ### Feature Flags
 
 There are some features, which are quite opinionated. To make those work for
-everyone, *aws-nuke* has flags to manually enable those features. These can be
+everyone, *aws-list* has flags to manually enable those features. These can be
 configured on the root-level of the config, like this:
 
 ```yaml
@@ -431,11 +432,11 @@ It is possible to filter this is important for not deleting the current user
 for example or for resources like S3 Buckets which have a globally shared
 namespace and might be hard to recreate. Currently the filtering is based on
 the resource identifier. The identifier will be printed as the first step of
-*aws-nuke* (eg `i-01b489457a60298dd` for an EC2 instance).
+*aws-list* (eg `i-01b489457a60298dd` for an EC2 instance).
 
-**Note: Even with filters you should not run aws-nuke on any AWS account, where
+**Note: Even with filters you should not run aws-list on any AWS account, where
 you cannot afford to lose all resources. It is easy to make mistakes in the
-filter configuration. Also, since aws-nuke is in continous development, there
+filter configuration. Also, since aws-list is in continous development, there
 is always a possibility to introduce new bugs, no matter how careful we review
 new code.**
 
@@ -466,7 +467,7 @@ accounts:
 
 Any resource whose resource identifier exactly matches any of the filters in
 the list will be skipped. These will be marked as "filtered by config" on the
-*aws-nuke* run.
+*aws-list* run.
 
 #### Filter Properties
 
@@ -546,7 +547,7 @@ CloudFormationStack:
 ```
 
 In this case *any* CloudFormationStack ***but*** the ones called "foo" will be
-filtered. Be aware that *aws-nuke* internally takes every resource and applies
+filtered. Be aware that *aws-list* internally takes every resource and applies
 every filter on it. If a filter matches, it marks the node as filtered.
 
 
@@ -556,7 +557,7 @@ It might be the case that some filters are the same across multiple accounts.
 This especially could happen, if provisioning tools like Terraform are used or
 if IAM resources follow the same pattern.
 
-For this case *aws-nuke* supports presets of filters, that can applied on
+For this case *aws-list* supports presets of filters, that can applied on
 multiple accounts. A configuration could look like this:
 
 ```yaml
@@ -602,50 +603,50 @@ presets:
 ## Install
 
 ### For macOS
-`brew install aws-nuke`
+`brew install aws-list`
 
 ### Use Released Binaries
 
 The easiest way of installing it, is to download the latest
-[release](https://github.com/rebuy-de/aws-nuke/releases) from GitHub.
+[release](https://github.com/rebuy-de/aws-list/releases) from GitHub.
 
 #### Example for Linux Intel/AMD
 
 Download and extract
-`$ wget -c https://github.com/rebuy-de/aws-nuke/releases/download/v2.22.1/aws-nuke-v2.22.1-linux-amd64.tar.gz -O - | tar -xz -C $HOME/bin`
+`$ wget -c https://github.com/rebuy-de/aws-list/releases/download/v2.22.1/aws-list-v2.22.1-linux-amd64.tar.gz -O - | tar -xz -C $HOME/bin`
 
 Run
-`$ aws-nuke-v2.22.1-linux-amd64`
+`$ aws-list-v2.22.1-linux-amd64`
 
 ### Compile from Source
 
-To compile *aws-nuke* from source you need a working
+To compile *aws-list* from source you need a working
 [Golang](https://golang.org/doc/install) development environment. The sources
-must be cloned to `$GOPATH/src/github.com/rebuy-de/aws-nuke`.
+must be cloned to `$GOPATH/src/github.com/rebuy-de/aws-list`.
 
 Also you need to install [golint](https://github.com/golang/lint/) and [GNU
 Make](https://www.gnu.org/software/make/).
 
 Then you just need to run `make build` to compile a binary into the project
-directory or `make install` go install *aws-nuke* into `$GOPATH/bin`. With
-`make xc` you can cross compile *aws-nuke* for other platforms.
+directory or `make install` go install *aws-list* into `$GOPATH/bin`. With
+`make xc` you can cross compile *aws-list* for other platforms.
 
 ### Docker
 
-You can run *aws-nuke* with Docker by using a command like this:
+You can run *aws-list* with Docker by using a command like this:
 
 ```bash
 $ docker run \
     --rm -it \
-    -v /full-path/to/nuke-config.yml:/home/aws-nuke/config.yml \
-    -v /home/user/.aws:/home/aws-nuke/.aws \
-    quay.io/rebuy/aws-nuke:v2.22.1 \
+    -v /full-path/to/nuke-config.yml:/home/aws-list/config.yml \
+    -v /home/user/.aws:/home/aws-list/.aws \
+    quay.io/rebuy/aws-list:v2.22.1 \
     --profile default \
-    --config /home/aws-nuke/config.yml
+    --config /home/aws-list/config.yml
 ```
 
 To make it work, you need to adjust the paths for the AWS config and the
-*aws-nuke* config.
+*aws-list* config.
 
 Also you need to specify the correct AWS profile. Instead of mounting the AWS
 directory, you can use the `--access-key-id` and `--secret-access-key` flags.
@@ -659,7 +660,7 @@ likely to break at any time.
 
 ### Unit Tests
 
-To unit test *aws-nuke*, some tests require [gomock](https://github.com/golang/mock) to run.
+To unit test *aws-list*, some tests require [gomock](https://github.com/golang/mock) to run.
 This will run via `go generate ./...`, but is automatically run via `make test`.
 To run the unit tests:
 
@@ -671,13 +672,13 @@ make test
 ## Contact Channels
 
 Feel free to create a GitHub Issue for any bug reports or feature requests.
-Please use our mailing list for questions: aws-nuke@googlegroups.com. You can
+Please use our mailing list for questions: aws-list@googlegroups.com. You can
 also search in the mailing list archive, whether someone already had the same
-problem: https://groups.google.com/d/forum/aws-nuke
+problem: https://groups.google.com/d/forum/aws-list
 
 ## Contribute
 
-You can contribute to *aws-nuke* by forking this repository, making your
+You can contribute to *aws-list* by forking this repository, making your
 changes and creating a Pull Request against our repository. If you are unsure
 how to solve a problem or have other questions about a contributions, please
 create a GitHub issue.

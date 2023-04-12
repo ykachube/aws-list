@@ -16,14 +16,14 @@ COPY . .
 
 RUN set -x \
  && make build \
- && cp /src/dist/aws-nuke /usr/local/bin/
+ && cp /src/dist/aws-list /usr/local/bin/
 
 FROM alpine:latest
 RUN apk add --no-cache ca-certificates
 
 COPY --from=builder /usr/local/bin/* /usr/local/bin/
 
-RUN adduser -D aws-nuke
-USER aws-nuke
+RUN adduser -D aws-list
+USER aws-list
 
-ENTRYPOINT ["/usr/local/bin/aws-nuke"]
+ENTRYPOINT ["/usr/local/bin/aws-list"]
